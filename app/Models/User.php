@@ -20,7 +20,11 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
+        'avatar',
+        'role',
+        'is_active',
     ];
 
     /**
@@ -44,5 +48,29 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // User punya banyak listing
+    public function listings()
+    {
+        return $this->hasMany(Listing::class);
+    }
+
+    // User sebagai buyer
+    public function buyingConversations()
+    {
+        return $this->hasMany(Conversation::class, 'buyer_id');
+    }
+
+    // User sebagai seller
+    public function sellingConversations()
+    {
+        return $this->hasMany(Conversation::class, 'seller_id');
+    }
+
+    // User favorite
+    public function favorites()
+    {
+        return $this->belongsToMany(Listing::class, 'favorites')->withTimestamps();
     }
 }
