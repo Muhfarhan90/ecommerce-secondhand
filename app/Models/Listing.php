@@ -53,4 +53,9 @@ class Listing extends Model
     {
         return $this->hasMany(ListingView::class);
     }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
 }

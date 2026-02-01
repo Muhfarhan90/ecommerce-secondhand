@@ -5,9 +5,9 @@
     @include('layouts.partials.head')
 </head>
 
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gradient-to-br from-gray-50 to-blue-50/30 text-gray-800 antialiased">
 
-    {{-- Navbar --}}
+    {{-- Navigation --}}
     @include('layouts.partials.navbar')
 
     {{-- Main Content --}}
@@ -18,7 +18,7 @@
     {{-- Footer --}}
     @include('layouts.partials.footer')
 
-    {{-- JS --}}
+    {{-- Scripts --}}
     @include('layouts.partials.scripts')
 
 </body>

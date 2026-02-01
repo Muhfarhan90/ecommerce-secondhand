@@ -20,7 +20,7 @@ return new class extends Migration
             $table->text('description');
             $table->decimal('price', 10, 2)->nullable();
             $table->enum('condition', ['new', 'used'])->default('used');
-            $table->enum('status', ['active', 'sold', 'archived'])->default('active');
+            $table->enum('status', ['active', 'inactive'])->default('active');
             // Lokasi
             $table->decimal('latitude', 10, 7)->nullable();
             $table->decimal('longitude', 10, 7)->nullable();
