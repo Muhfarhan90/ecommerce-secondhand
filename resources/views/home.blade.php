@@ -61,6 +61,65 @@
         </div>
     </section>
 
+    {{-- Banner Section --}}
+    @if ($banners->count() > 0)
+        <section class="py-8 md:py-12 bg-gray-50" x-data="bannerCarousel()">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="relative">
+                    {{-- Banner Container --}}
+                    <div class="rounded-2xl overflow-hidden shadow-xl">
+                        {{-- Banner Items --}}
+                        @foreach ($banners as $index => $banner)
+                            <div x-show="currentSlide === {{ $index }}"
+                                x-transition:enter="transition ease-out duration-500"
+                                x-transition:enter-start="opacity-0 transform translate-x-full"
+                                x-transition:enter-end="opacity-100 transform translate-x-0"
+                                x-transition:leave="transition ease-in duration-500"
+                                x-transition:leave-start="opacity-100 transform translate-x-0"
+                                x-transition:leave-end="opacity-0 transform -translate-x-full">
+                                <a href="{{ route('listings.show', $banner->listing) }}"
+                                    class="block h-[300px] md:h-[400px] lg:h-[450px] group">
+                                    <img src="{{ asset('storage/' . $banner->image_path) }}" alt="{{ $banner->title }}"
+                                        class="w-full h-full object-cover group-hover:opacity-95 transition-opacity duration-300">
+                                </a>
+                            </div>
+                        @endforeach
+
+                        {{-- Dots Indicator --}}
+                        @if ($banners->count() > 1)
+                            <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                                @foreach ($banners as $index => $banner)
+                                    <button @click="currentSlide = {{ $index }}"
+                                        :class="currentSlide === {{ $index }} ? 'bg-white w-8' : 'bg-white/50 w-3'"
+                                        class="h-3 rounded-full transition-all hover:bg-white/70"></button>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- Navigation Arrows - Outside Banner --}}
+                    @if ($banners->count() > 1)
+                        <button @click="previousSlide"
+                            class="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 bg-white hover:bg-blue-600 text-gray-800 hover:text-white p-3 md:p-4 rounded-full shadow-lg transition-all hover:scale-110 z-10">
+                            <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
+                                </path>
+                            </svg>
+                        </button>
+
+                        <button @click="nextSlide"
+                            class="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 bg-white hover:bg-blue-600 text-gray-800 hover:text-white p-3 md:p-4 rounded-full shadow-lg transition-all hover:scale-110 z-10">
+                            <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                                </path>
+                            </svg>
+                        </button>
+                    @endif
+                </div>
+            </div>
+        </section>
+    @endif
+
     {{-- Categories Section --}}
     <section class="py-12 md:py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -75,7 +134,7 @@
 
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 @foreach ($categories as $category)
-                    <a href="{{ route('listings.index', ['category' => $category->id]) }}"
+                    <a href="{{ route('listings.index', ['category' => $category->slug]) }}"
                         class="group bg-white hover:bg-blue-50 rounded-xl p-6 text-center transition-all hover:shadow-lg hover:-translate-y-1 border border-gray-100">
                         <div
                             class="w-14 h-14 mx-auto mb-3 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-200 transition-colors">
@@ -161,7 +220,8 @@
                         class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
                         Lihat Semua Iklan
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                            </path>
                         </svg>
                     </a>
                 </div>
@@ -226,6 +286,71 @@
         </div>
     </section>
 
+    {{-- Banner Advertisement Info --}}
+    <section class="py-12 md:py-16 bg-gradient-to-br from-blue-50 to-white border-t border-blue-100">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-2xl shadow-lg p-8 md:p-12 border border-blue-100">
+                <div class="text-center mb-8">
+                    <div
+                        class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-500 rounded-2xl mb-4">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                        Ingin Pasang Banner di Homepage?
+                    </h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                        Promosikan produk Anda dengan banner menarik di halaman utama kami dan jangkau ribuan pengunjung
+                        setiap hari
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <div class="text-center p-4">
+                        <div class="text-blue-600 font-bold text-3xl mb-2">1000+</div>
+                        <div class="text-gray-600 text-sm">Pengunjung Harian</div>
+                    </div>
+                    <div class="text-center p-4">
+                        <div class="text-blue-600 font-bold text-3xl mb-2">24/7</div>
+                        <div class="text-gray-600 text-sm">Tampil Terus Menerus</div>
+                    </div>
+                    <div class="text-center p-4">
+                        <div class="text-blue-600 font-bold text-3xl mb-2">Premium</div>
+                        <div class="text-gray-600 text-sm">Posisi Strategis</div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-6 text-center">
+                    <p class="text-gray-700 mb-4">
+                        <span class="font-semibold">Hubungi Admin untuk Info Lebih Lanjut:</span>
+                    </p>
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <a href="mailto:admin@secondhand.com"
+                            class="inline-flex items-center gap-2 px-6 py-3 bg-white hover:bg-blue-600 text-gray-800 hover:text-white font-semibold rounded-lg transition-all shadow hover:shadow-lg group">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                            admin@secondhand.com
+                        </a>
+                        <a href="https://wa.me/6281234567890"
+                            class="inline-flex items-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-all shadow hover:shadow-lg">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                            </svg>
+                            WhatsApp Admin
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     {{-- CTA Section --}}
     <section class="py-16 md:py-20 bg-gradient-to-r from-blue-600 to-blue-500">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
@@ -249,3 +374,50 @@
     </section>
 
 @endsection
+
+@push('scripts')
+    <script>
+        function bannerCarousel() {
+            return {
+                currentSlide: 0,
+                totalSlides: {{ $banners->count() }},
+                autoplayInterval: null,
+
+                init() {
+                    // Start autoplay
+                    this.startAutoplay();
+
+                    // Pause on hover
+                    this.$el.addEventListener('mouseenter', () => {
+                        this.stopAutoplay();
+                    });
+
+                    // Resume on mouse leave
+                    this.$el.addEventListener('mouseleave', () => {
+                        this.startAutoplay();
+                    });
+                },
+
+                nextSlide() {
+                    this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
+                },
+
+                previousSlide() {
+                    this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
+                },
+
+                startAutoplay() {
+                    this.autoplayInterval = setInterval(() => {
+                        this.nextSlide();
+                    }, 5000); // Change slide every 5 seconds
+                },
+
+                stopAutoplay() {
+                    if (this.autoplayInterval) {
+                        clearInterval(this.autoplayInterval);
+                    }
+                }
+            }
+        }
+    </script>
+@endpush

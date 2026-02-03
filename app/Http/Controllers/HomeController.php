@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Listing;
 use Illuminate\Http\Request;
@@ -26,6 +27,12 @@ class HomeController extends Controller
             ->take(8)
             ->get();
 
+        // Get active banners
+        $banners = Banner::with('listing')
+            ->where('is_active', true)
+            ->orderBy('order')
+            ->get();
+
         // Popular categories with listing count
         $categories = Category::withCount('listings')
             ->having('listings_count', '>', 0)
@@ -39,6 +46,6 @@ class HomeController extends Controller
             'total_users' => \App\Models\User::count(),
         ];
 
-        return view('home', compact('listings', 'categories', 'stats'));
+        return view('home', compact('listings', 'categories', 'stats', 'banners'));
     }
 }

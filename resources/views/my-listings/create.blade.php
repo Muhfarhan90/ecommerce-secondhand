@@ -217,7 +217,9 @@
                                 <p class="text-sm text-gray-500">Atau drag & drop file di sini</p>
                                 <p class="text-xs text-gray-400 mt-3">PNG, JPG hingga 2MB (minimal 1 foto)</p>
                             </div>
-                            <input type="file" name="images[]" class="hidden" multiple accept="image/*" required>
+                            <input id="images-input" type="file" name="images[]" class="sr-only" multiple
+                                accept="image/*" required>
+                            <div id="images-list" class="mt-3 text-sm text-gray-600"></div>
                         </label>
                         @error('images')
                             <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
@@ -262,6 +264,22 @@
                     console.log('Geolocation error:', error.message);
                 }
             );
+        }
+    </script>
+    <script>
+        // Show selected filenames for debugging/confirmation
+        const imagesInput = document.getElementById('images-input');
+        const imagesList = document.getElementById('images-list');
+        if (imagesInput) {
+            imagesInput.addEventListener('change', function() {
+                if (!imagesInput.files || imagesInput.files.length === 0) {
+                    imagesList.textContent = '';
+                    return;
+                }
+                const names = Array.from(imagesInput.files).map(f => f.name + ' (' + Math.round(f.size / 1024) +
+                    ' KB)');
+                imagesList.textContent = names.join(', ');
+            });
         }
     </script>
 @endpush

@@ -25,7 +25,7 @@
                                     d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
                                     clip-rule="evenodd"></path>
                             </svg>
-                            <a href="{{ route('listings.index', ['category' => $listing->category_id]) }}"
+                            <a href="{{ route('listings.index', ['category' => $listing->category->slug]) }}"
                                 class="ml-1 text-sm text-gray-600 hover:text-blue-600">
                                 {{ $listing->category->name ?? 'Kategori' }}
                             </a>
@@ -130,7 +130,8 @@
                             </div>
                             <div class="text-center">
                                 <div class="text-gray-500 text-sm mb-1">Lokasi</div>
-                                <div class="font-semibold text-gray-900">{{ $listing->city }}, {{ $listing->province }}</div>
+                                <div class="font-semibold text-gray-900">{{ $listing->city }}, {{ $listing->province }}
+                                </div>
                             </div>
                             <div class="text-center">
                                 <div class="text-gray-500 text-sm mb-1">Dilihat</div>
@@ -193,17 +194,28 @@
                         <div class="bg-white rounded-2xl shadow-sm p-6">
                             <h3 class="text-lg font-bold text-gray-900 mb-4">Penjual</h3>
 
-                            <div class="flex items-center mb-6">
-                                <div
-                                    class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-2xl font-bold">
-                                    {{ strtoupper(substr($listing->user->name, 0, 1)) }}
+                            <a href="{{ route('sellers.show', $listing->user) }}"
+                                class="block mb-6 hover:bg-gray-50 rounded-xl p-2 -m-2 transition-colors">
+                                <div class="flex items-center">
+                                    <div
+                                        class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-2xl font-bold">
+                                        {{ strtoupper(substr($listing->user->name, 0, 1)) }}
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <h4
+                                            class="font-semibold text-gray-900 text-lg hover:text-blue-600 transition-colors">
+                                            {{ $listing->user->name }}
+                                        </h4>
+                                        <p class="text-sm text-gray-500">Bergabung
+                                            {{ $listing->user->created_at->diffForHumans() }}</p>
+                                    </div>
+                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7"></path>
+                                    </svg>
                                 </div>
-                                <div class="ml-4 flex-1">
-                                    <h4 class="font-semibold text-gray-900 text-lg">{{ $listing->user->name }}</h4>
-                                    <p class="text-sm text-gray-500">Bergabung
-                                        {{ $listing->user->created_at->diffForHumans() }}</p>
-                                </div>
-                            </div>
+                            </a>
 
                             {{-- Contact Button --}}
                             @auth

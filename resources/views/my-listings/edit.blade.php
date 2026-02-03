@@ -245,8 +245,10 @@
                                 <p class="text-gray-700 font-medium mb-1">Klik untuk upload foto</p>
                                 <p class="text-xs text-gray-400">PNG, JPG hingga 2MB</p>
                             </div>
-                            <input type="file" name="images[]" class="hidden" multiple accept="image/*">
+                            <input id="edit-images-input" type="file" name="images[]" class="sr-only" multiple
+                                accept="image/*">
                         </label>
+                        <div id="edit-images-list" class="mt-3 text-sm text-gray-600"></div>
                         @error('images')
                             <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
                         @enderror
@@ -316,230 +318,20 @@
                 })
                 .catch(() => alert('Terjadi kesalahan'));
         }
+
+        // Show selected filenames for new images
+        const editImagesInput = document.getElementById('edit-images-input');
+        const editImagesList = document.getElementById('edit-images-list');
+        if (editImagesInput) {
+            editImagesInput.addEventListener('change', function() {
+                if (!editImagesInput.files || editImagesInput.files.length === 0) {
+                    editImagesList.textContent = '';
+                    return;
+                }
+                const names = Array.from(editImagesInput.files).map(f => f.name + ' (' + Math.round(f.size / 1024) +
+                    ' KB)');
+                editImagesList.textContent = 'Foto baru: ' + names.join(', ');
+            });
+        }
     </script>
-@endpush
-
-<h1 class="text-2xl font-semibold mb-6">
-    Edit Iklan
-</h1>
-
-@if ($errors->any())
-    <div class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
-        <p class="font-medium text-red-600 mb-2">
-            Terjadi kesalahan:
-        </p>
-        <ul class="list-disc list-inside text-sm text-red-600">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
-<form method="POST" action="{{ route('my-listings.update', $listing) }}" enctype="multipart/form-data"
-    class="bg-white border rounded-2xl p-6 space-y-6">
-    @csrf
-    @method('PUT')
-
-    {{-- Title --}}
-    <div>
-        <label class="block text-sm font-medium mb-1">
-            Judul Iklan
-        </label>
-        <input type="text" name="title" value="{{ old('title', $listing->title) }}"
-            class="w-full border rounded-lg px-4 py-2" required>
-        @error('title')
-            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-        @enderror
-    </div>
-
-    {{-- Category --}}
-    <div>
-        <label class="block text-sm font-medium mb-1">
-            Kategori
-        </label>
-        <select name="category_id" class="w-full border rounded-lg px-4 py-2" required>
-            @foreach ($categories as $category)
-                <option value="{{ $category->id }}" @selected($category->id == $listing->category_id)>
-                    {{ $category->name }}
-                </option>
-            @endforeach
-        </select>
-        @error('category_id')
-            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-        @enderror
-    </div>
-
-    {{-- Price & Condition --}}
-    <div class="grid grid-cols-2 gap-4">
-        <div>
-            <label class="block text-sm font-medium mb-1">
-                Harga
-            </label>
-            <input type="number" name="price" value="{{ old('price', $listing->price) }}"
-                class="w-full border rounded-lg px-4 py-2" required>
-            @error('price')
-                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-            @enderror
-        </div>
-
-        <div>
-            <label class="block text-sm font-medium mb-1">
-                Kondisi
-            </label>
-            <select name="condition" class="w-full border rounded-lg px-4 py-2" required>
-                <option value="used" @selected($listing->condition === 'used')>Bekas</option>
-                <option value="new" @selected($listing->condition === 'new')>Baru</option>
-            </select>
-            @error('condition')
-                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-            @enderror
-        </div>
-    </div>
-
-    {{-- Description --}}
-    <div>
-        <label class="block text-sm font-medium mb-1">
-            Deskripsi
-        </label>
-        <textarea name="description" rows="4" class="w-full border rounded-lg px-4 py-2" required>{{ old('description', $listing->description) }}</textarea>
-        @error('description')
-            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-        @enderror
-    </div>
-
-    {{-- Location --}}
-    <div class="grid grid-cols-2 gap-4">
-        <div>
-            <label class="block text-sm font-medium mb-1">
-                Kota
-            </label>
-            <input type="text" name="city" value="{{ old('city', $listing->city) }}"
-                class="w-full border rounded-lg px-4 py-2" required>
-            @error('city')
-                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-            @enderror
-        </div>
-
-        <div>
-            <label class="block text-sm font-medium mb-1">
-                Provinsi
-            </label>
-            <input type="text" name="province" value="{{ old('province', $listing->province) }}"
-                class="w-full border rounded-lg px-4 py-2" required>
-            @error('province')
-                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-            @enderror
-        </div>
-    </div>
-
-    <div>
-        <label class="block text-sm font-medium mb-1">
-            Alamat Lengkap
-        </label>
-        <input type="text" name="address" value="{{ old('address', $listing->address) }}"
-            class="w-full border rounded-lg px-4 py-2">
-        @error('address')
-            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-        @enderror
-    </div>
-
-    {{-- Current Images --}}
-    @if ($listing->images->count() > 0)
-        <div>
-            <label class="block text-sm font-medium mb-2">
-                Foto Saat Ini
-            </label>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="current-images">
-                @foreach ($listing->images as $image)
-                    <div class="relative group" id="image-{{ $image->id }}">
-                        <img src="{{ $image->image_path }}" alt="Listing Image"
-                            class="w-full h-32 object-cover rounded-lg border">
-                        <button type="button" onclick="deleteImage({{ $image->id }})"
-                            class="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                        @if ($image->is_primary)
-                            <span
-                                class="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">Utama</span>
-                        @endif
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    @endif
-
-    {{-- New Images --}}
-    <div>
-        <label class="block text-sm font-medium mb-2">
-            Tambah Foto Baru (Opsional)
-        </label>
-        <input type="file" name="images[]" class="w-full" multiple accept="image/*">
-        <p class="text-xs text-gray-500 mt-1">
-            Upload foto tambahan (maks 2MB per foto)
-        </p>
-        @error('images')
-            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-        @enderror
-        @error('images.*')
-            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-        @enderror
-    </div>
-
-    {{-- Actions --}}
-    <div class="flex justify-between items-center pt-4">
-        <div class="space-x-3">
-            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
-                Simpan Perubahan
-            </button>
-            <a href="{{ route('my-listings.index') }}"
-                class="inline-block border border-gray-300 px-6 py-2 rounded-lg hover:bg-gray-50 transition">
-                Batal
-            </a>
-        </div>
-    </div>
-</form>
-
-{{-- Delete Form (Separate) --}}
-<form method="POST" action="{{ route('my-listings.destroy', $listing) }}"
-    onsubmit="return confirm('Yakin hapus iklan ini? Data tidak dapat dikembalikan.');" class="mt-6">
-    @csrf
-    @method('DELETE')
-    <button type="submit" class="text-red-600 hover:text-red-700 text-sm font-medium">
-        Hapus Iklan Ini
-    </button>
-</form>
-
-</div>
-@endsection
-
-@push('scripts')
-<script>
-    function deleteImage(imageId) {
-        if (!confirm('Hapus foto ini?')) return;
-
-        fetch(`/my-listings/images/${imageId}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById(`image-${imageId}`).remove();
-                    if (document.querySelectorAll('#current-images > div').length === 0) {
-                        document.getElementById('current-images').parentElement.remove();
-                    }
-                } else {
-                    alert(data.message || 'Gagal menghapus foto');
-                }
-            })
-            .catch(() => alert('Terjadi kesalahan'));
-    }
-</script>
 @endpush
